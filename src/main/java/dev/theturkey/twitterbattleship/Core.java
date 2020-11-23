@@ -88,7 +88,7 @@ public class Core
 						int y;
 						if(winner.isPresent())
 						{
-							String guess = winner.get().getText().toLowerCase();
+							String guess = winner.get().getText().toLowerCase().replace("@battleshipgbot", "").trim();
 							x = guess.charAt(0) - 97;
 							y = Integer.parseInt(guess.substring(1)) - 1;
 						}
@@ -134,7 +134,7 @@ public class Core
 		if(t.getInReplyToStatusId() != lastStatus)
 			return false;
 
-		String lowerCased = t.getText().toLowerCase();
+		String lowerCased = t.getText().toLowerCase().replace("@battleshipgbot", "").trim();
 		if(!lowerCased.matches(REGEX))
 			return false;
 

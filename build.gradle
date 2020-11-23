@@ -1,7 +1,7 @@
 plugins {
     id 'java'
+    id 'application'
 }
-
 group 'dev.theturkey.twitterbattleship'
 version '1.0'
 
@@ -13,4 +13,17 @@ repositories {
 
 dependencies {
     compile group: 'org.twitter4j', name: 'twitter4j-core', version: '4.0.7'
+}
+
+application {
+    mainClassName = 'dev.theturkey.twitterbattleship.Core'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Implementation-Version': project.version,
+                'Main-Class': 'dev.theturkey.twitterbattleship.Core'
+        )
+    }
 }
