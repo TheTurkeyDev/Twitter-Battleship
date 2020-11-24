@@ -13,7 +13,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -24,8 +26,6 @@ import java.util.stream.Collectors;
 public class Core
 {
 	public static final Random rand = new Random();
-	private static String REGEX = "^[a-j]([1-9]|10)$";
-	private static int STEP_DELAY = 1000 * 60 * 60;
 
 	private GameBoard playerBoard;
 	private GameBoard cpuBoard;
@@ -36,9 +36,12 @@ public class Core
 	private boolean gameOver = false;
 	private boolean cpuWon = false;
 
+	private GameStateSave gameSave;
+
 	public Core()
 	{
 		twitter = TwitterFactory.getSingleton();
+		gameSave = new GameStateSave();
 	}
 
 	public void initGame()
@@ -52,11 +55,29 @@ public class Core
 
 	public void start()
 	{
-		initGame();
-		step();
+		GameStateWrapper stateWrapper = gameSave.loadGameState();
+		if(stateWrapper != null)
+		{
+			playerBoard = stateWrapper.playerBoard;
+			cpuBoard = stateWrapper.cpuBoard;
+			lastStatus = stateWrapper.lastTweetID;
+			computerAI = new SimpleAI();
+		}
+		else
+		{
+			gameOver = true;
+		}
+
+		Calendar calendar = new GregorianCalendar();
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) + 1);
+
+		System.out.println("Bot will run next at " + calendar.getTime().toString());
 
 		Timer t = new Timer();
-		t.scheduleAtFixedRate(new TimerTask()
+		t.schedule(new TimerTask()
 		{
 			@Override
 			public void run()
@@ -126,7 +147,7 @@ public class Core
 					}
 				}
 			}
-		}, STEP_DELAY, STEP_DELAY);
+		}, calendar.getTime(), 1000 * 60 * 60);
 	}
 
 	public boolean isValidComment(Status t)
@@ -135,7 +156,7 @@ public class Core
 			return false;
 
 		String lowerCased = t.getText().toLowerCase().replace("@battleshipgbot", "").trim();
-		if(!lowerCased.matches(REGEX))
+		if(!lowerCased.matches("^[a-j]([1-9]|10)$"))
 			return false;
 
 		int x = lowerCased.charAt(0) - 97;
@@ -146,7 +167,7 @@ public class Core
 
 	private void step()
 	{
-		genImage();
+		gameSave.saveGame(playerBoard, cpuBoard, lastStatus, gameOver);
 		try
 		{
 			StatusUpdate statusUpdate = new StatusUpdate("");

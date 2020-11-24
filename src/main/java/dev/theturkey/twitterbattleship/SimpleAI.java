@@ -5,118 +5,84 @@ import java.util.List;
 
 public class SimpleAI
 {
-	List<int[]> toGuess = new ArrayList<>();
-	List<int[]> hits = new ArrayList<>();
-	boolean dirFound = false;
+	private static Direction[] checkDirs = new Direction[]{Direction.DOWN, Direction.RIGHT};
 
 	public void act(GameBoard gameBoard)
 	{
-		if(toGuess.size() > 0)
-		{
-			int[] guess;
-			do
-			{
-				guess = toGuess.remove(0);
-			} while(toGuess.size() > 0 && gameBoard.hasGuessed(guess[0], guess[1]));
+		int[][] probabilities = new int[GameBoard.BOARD_SIZE][GameBoard.BOARD_SIZE];
 
-			if(toGuess.size() == 0 && gameBoard.hasGuessed(guess[0], guess[1]))
+		List<BoatInfo> notSunk = new ArrayList<>();
+		for(BoatInfo boatInfo : gameBoard.getBoats())
+			if(!gameBoard.isShipSunk(boatInfo))
+				notSunk.add(boatInfo);
+
+		for(int y = 0; y < GameBoard.BOARD_SIZE; y++)
+		{
+			for(int x = 0; x < GameBoard.BOARD_SIZE; x++)
 			{
-				makeRandGuess(gameBoard);
-				dirFound = false;
-			}
-			else
-			{
-				ActionResult result = gameBoard.makeGuessAt(guess[0], guess[1]);
-				if(result == ActionResult.HIT)
+				for(BoatInfo boatInfo : notSunk)
 				{
-					if(!dirFound)
+					for(Direction dir : checkDirs)
 					{
-						dirFound = true;
-						int xStep = guess[0] - hits.get(0)[0];
-						int yStep = guess[1] - hits.get(0)[1];
-						for(int i = 1; i < 5; i++)
+						boolean containsHit = false;
+						boolean fits = true;
+						for(int i = 0; i < boatInfo.length; i++)
 						{
-							int xx = guess[0] + (xStep * i);
-							int yy = guess[1] + (yStep * i);
-							if(xx < 0 || xx > 9 || yy < 0 || yy > 9)
+							int[] checkPos = dir.getOffset(x, y, i);
+							if(checkPos[0] < 0 || checkPos[0] > 9 || checkPos[1] < 0 || checkPos[1] > 9)
+							{
+								fits = false;
 								break;
+							}
 
-							if(!gameBoard.hasGuessed(xx, yy))
-								toGuess.add(0, new int[]{xx, yy});
+							boolean wasGuessed = gameBoard.hasGuessed(checkPos[0], checkPos[1]);
+							BoatInfo boatAt = gameBoard.getBoatAt(checkPos[0], checkPos[1]);
+							if(wasGuessed && (boatAt == null || !notSunk.contains(boatAt)))
+							{
+								fits = false;
+								break;
+							}
+							else if(wasGuessed)
+							{
+								containsHit = true;
+							}
 						}
-						for(int i = 1; i > -5; i--)
+
+						if(!fits)
+							continue;
+
+						for(int i = 0; i < boatInfo.length; i++)
 						{
-							int xx = guess[0] + (xStep * i);
-							int yy = guess[1] + (yStep * i);
-							if(xx < 0 || xx > 9 || yy < 0 || yy > 9)
-								break;
-
-							if(!gameBoard.hasGuessed(xx, yy))
-								toGuess.add(0, new int[]{xx, yy});
+							int[] checkPos = dir.getOffset(x, y, i);
+							if(!gameBoard.hasGuessed(checkPos[0], checkPos[1]))
+								probabilities[checkPos[0]][checkPos[1]] += containsHit ? 5 : 1;
 						}
 					}
 				}
-				else if(result == ActionResult.MISS)
-				{
-					if(toGuess.size() == 0)
-					{
-						dirFound = false;
-						return;
-					}
-					int tgX = toGuess.get(0)[0];
-					int tgY = toGuess.get(0)[1];
-					int xStep = Math.abs(guess[0] - tgX);
-					int yStep = Math.abs(guess[1] - tgY);
-					int lastX = tgX;
-					int lastY = tgY;
-					while(xStep == 1 ^ yStep == 1)
-					{
-						toGuess.remove(0);
-						if(toGuess.size() == 0)
-							break;
-						tgX = toGuess.get(0)[0];
-						tgY = toGuess.get(0)[1];
-						xStep = Math.abs(lastX - tgX);
-						yStep = Math.abs(lastY - tgY);
-						lastX = tgX;
-						lastY = tgY;
-					}
-				}
-				else if(result == ActionResult.SUNK)
-				{
-					toGuess.clear();
-					dirFound = false;
-				}
 			}
 		}
-		else
-		{
-			makeRandGuess(gameBoard);
-		}
-	}
 
-	private void makeRandGuess(GameBoard gameBoard)
-	{
-		int x = Core.rand.nextInt(10);
-		int y = Core.rand.nextInt(10);
-		while(gameBoard.hasGuessed(x, y))
+		int highestProb = 0;
+		List<int[]> highestProbList = new ArrayList<>();
+		for(int x = 0; x < GameBoard.BOARD_SIZE; x++)
 		{
-			x = Core.rand.nextInt(10);
-			y = Core.rand.nextInt(10);
-		}
-
-		ActionResult result = gameBoard.makeGuessAt(x, y);
-		if(result == ActionResult.HIT)
-		{
-			hits.add(new int[]{x, y});
-			for(Direction d : Direction.values())
+			for(int y = 0; y < GameBoard.BOARD_SIZE; y++)
 			{
-				int[] dirPos = d.getOffset(x, y, 1);
-				if(dirPos[0] < 0 || dirPos[0] > 9 || dirPos[1] < 0 || dirPos[1] > 9)
-					break;
-				if(!gameBoard.hasGuessed(dirPos[0], dirPos[1]))
-					toGuess.add(dirPos);
+				int prob = probabilities[x][y];
+				if(prob > highestProb)
+				{
+					highestProbList.clear();
+					highestProb = prob;
+					highestProbList.add(new int[]{x, y});
+				}
+				else if(prob == highestProb)
+				{
+					highestProbList.add(new int[]{x, y});
+				}
 			}
 		}
+
+		int[] chosenPoint = highestProbList.get(Core.rand.nextInt(highestProbList.size()));
+		gameBoard.makeGuessAt(chosenPoint[0], chosenPoint[1]);
 	}
 }

@@ -13,6 +13,8 @@ public class GameBoard
 	private static final Color WATER = Color.decode("#5656f0");
 	public static final Color BLACK = Color.decode("#000000");
 
+	public static final int BOARD_SIZE = 10;
+
 	public static BufferedImage carrier;
 	public static BufferedImage battleship;
 	public static BufferedImage sub;
@@ -38,9 +40,19 @@ public class GameBoard
 		}
 	}
 
-
 	private List<BoatInfo> boats = new ArrayList<>();
 	private List<int[]> guessedPos = new ArrayList<>();
+
+	public GameBoard()
+	{
+
+	}
+
+	public GameBoard(List<BoatInfo> boats, List<int[]> guessedPos)
+	{
+		this.boats = boats;
+		this.guessedPos = guessedPos;
+	}
 
 	public void setup()
 	{
@@ -59,8 +71,8 @@ public class GameBoard
 		Direction dir = Direction.DOWN;
 		do
 		{
-			x = Core.rand.nextInt(10);
-			y = Core.rand.nextInt(10);
+			x = Core.rand.nextInt(BOARD_SIZE);
+			y = Core.rand.nextInt(BOARD_SIZE);
 			for(Direction d : getDirections())
 			{
 				dir = d;
@@ -176,9 +188,9 @@ public class GameBoard
 			g.drawString("COMPUTER", 715, 60);
 		}
 
-		for(int y = 0; y < 10; y++)
+		for(int y = 0; y < BOARD_SIZE; y++)
 		{
-			for(int x = 0; x < 10; x++)
+			for(int x = 0; x < BOARD_SIZE; x++)
 			{
 				int xOff = parentXOff + 50 + (x * 50);
 				int yOff = 75 + (y * 50);
@@ -194,12 +206,12 @@ public class GameBoard
 
 		g.setColor(Color.BLACK);
 		g.setFont(new Font(g.getFont().getName(), g.getFont().getStyle(), 24));
-		for(int y = 0; y < 10; y++)
+		for(int y = 0; y < BOARD_SIZE; y++)
 		{
 			g.drawString(String.valueOf(y + 1), parentXOff + 20, 110 + (y * 50));
 		}
 
-		for(int x = 0; x < 10; x++)
+		for(int x = 0; x < BOARD_SIZE; x++)
 		{
 			g.drawString(String.valueOf((char) (65 + x)), parentXOff + 70 + (x * 50), 600);
 		}
@@ -223,5 +235,15 @@ public class GameBoard
 				g.drawImage(miss, at, null);
 			}
 		}
+	}
+
+	public List<BoatInfo> getBoats()
+	{
+		return boats;
+	}
+
+	public List<int[]> getGuessedPos()
+	{
+		return guessedPos;
 	}
 }
