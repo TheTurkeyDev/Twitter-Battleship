@@ -24,7 +24,7 @@ public class SimpleAI
 				{
 					for(Direction dir : checkDirs)
 					{
-						boolean containsHit = false;
+						int hits = 0;
 						boolean fits = true;
 						for(int i = 0; i < boatInfo.length; i++)
 						{
@@ -44,7 +44,7 @@ public class SimpleAI
 							}
 							else if(wasGuessed)
 							{
-								containsHit = true;
+								hits++;
 							}
 						}
 
@@ -55,7 +55,7 @@ public class SimpleAI
 						{
 							int[] checkPos = dir.getOffset(x, y, i);
 							if(!gameBoard.hasGuessed(checkPos[0], checkPos[1]))
-								probabilities[checkPos[0]][checkPos[1]] += containsHit ? 5 : 1;
+								probabilities[checkPos[0]][checkPos[1]] += hits > 0 ? 5 * hits : 1;
 						}
 					}
 				}
