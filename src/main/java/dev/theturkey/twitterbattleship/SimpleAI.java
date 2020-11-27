@@ -55,7 +55,7 @@ public class SimpleAI
 						{
 							int[] checkPos = dir.getOffset(x, y, i);
 							if(!gameBoard.hasGuessed(checkPos[0], checkPos[1]))
-								probabilities[checkPos[0]][checkPos[1]] += hits > 0 ? 5 * hits : 1;
+								probabilities[checkPos[0]][checkPos[1]] += hits > 0 ? Math.pow(5, hits) : 1;
 						}
 					}
 				}
