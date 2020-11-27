@@ -72,6 +72,8 @@ public class GameStateSave
 		String[] lineGuesses = guesses.split(";");
 		for(String guessString : lineGuesses)
 		{
+			if(guesses.isEmpty())
+				continue;
 			String[] boatParts = guessString.split(",");
 			int x = Integer.parseInt(boatParts[0]);
 			int y = Integer.parseInt(boatParts[1]);
@@ -151,6 +153,9 @@ public class GameStateSave
 
 	public void saveGuessesToBuffer(StringBuilder saveBuffer, List<int[]> guesses)
 	{
+		if(guesses.size() == 0)
+			saveBuffer.append(" ");
+
 		for(int[] guess : guesses)
 			saveBuffer.append(guess[0]).append(",").append(guess[1]).append(";");
 	}

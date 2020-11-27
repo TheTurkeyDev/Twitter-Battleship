@@ -62,10 +62,12 @@ public class Core
 			cpuBoard = stateWrapper.cpuBoard;
 			lastStatus = stateWrapper.lastTweetID;
 			computerAI = new SimpleAI();
+			System.out.println("Game loaded from save");
 		}
 		else
 		{
 			gameOver = true;
+			System.out.println("No game to load in!");
 		}
 
 		Calendar calendar = new GregorianCalendar();
