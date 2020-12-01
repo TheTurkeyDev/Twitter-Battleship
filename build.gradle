@@ -2,8 +2,16 @@ plugins {
     id 'java'
     id 'application'
 }
-group 'dev.theturkey.twitterbattleship'
-version '1.0'
+
+ext.buildnumber = 0
+if (System.getenv('BUILD_NUMBER') != null)
+    project.buildnumber = System.getenv('BUILD_NUMBER') as Integer
+else
+    logger.lifecycle "No build number detected, setting to 0"
+
+group= 'dev.theturkey.twitterbattleship'
+archivesBaseName= 'TwitterBattleship'
+version= "1.0.${buildnumber}"
 
 sourceCompatibility = 1.8
 
@@ -17,13 +25,4 @@ dependencies {
 
 application {
     mainClassName = 'dev.theturkey.twitterbattleship.Core'
-}
-
-jar {
-    manifest {
-        attributes(
-                'Implementation-Version': project.version,
-                'Main-Class': 'dev.theturkey.twitterbattleship.Core'
-        )
-    }
 }
