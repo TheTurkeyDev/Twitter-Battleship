@@ -184,11 +184,11 @@ public class GameBoard
 
 		if(playerBoard)
 		{
-			g.drawString("PLAYER -  " + score, 175, 60);
+			g.drawString("PLAYER - " + score, 150, 60);
 		}
 		else
 		{
-			g.drawString(score + "  - COMPUTER", 650, 60);
+			g.drawString(score + " - COMPUTER", 625, 60);
 		}
 
 		for(int y = 0; y < BOARD_SIZE; y++)
