@@ -42,16 +42,18 @@ public class GameBoard
 
 	private List<BoatInfo> boats = new ArrayList<>();
 	private List<int[]> guessedPos = new ArrayList<>();
+	private int score;
 
 	public GameBoard()
 	{
 
 	}
 
-	public GameBoard(List<BoatInfo> boats, List<int[]> guessedPos)
+	public GameBoard(List<BoatInfo> boats, List<int[]> guessedPos, int score)
 	{
 		this.boats = boats;
 		this.guessedPos = guessedPos;
+		this.score = score;
 	}
 
 	public void setup()
@@ -178,14 +180,15 @@ public class GameBoard
 		int parentXOff = (playerBoard ? 0 : 600);
 
 		g.setColor(BLACK);
-		g.setFont(new Font(g.getFont().getName(), Font.BOLD, 64));
+		g.setFont(Core.FONT_64);
+
 		if(playerBoard)
 		{
-			g.drawString("PLAYER", 175, 60);
+			g.drawString("PLAYER -  " + score, 175, 60);
 		}
 		else
 		{
-			g.drawString("COMPUTER", 715, 60);
+			g.drawString(score + "  - COMPUTER", 650, 60);
 		}
 
 		for(int y = 0; y < BOARD_SIZE; y++)
@@ -205,7 +208,8 @@ public class GameBoard
 		}
 
 		g.setColor(Color.BLACK);
-		g.setFont(new Font(g.getFont().getName(), g.getFont().getStyle(), 24));
+		g.setFont(Core.FONT_24);
+
 		for(int y = 0; y < BOARD_SIZE; y++)
 		{
 			g.drawString(String.valueOf(y + 1), parentXOff + 20, 110 + (y * 50));
@@ -245,5 +249,15 @@ public class GameBoard
 	public List<int[]> getGuessedPos()
 	{
 		return guessedPos;
+	}
+
+	public void win()
+	{
+		this.score++;
+	}
+
+	public int getScore()
+	{
+		return score;
 	}
 }

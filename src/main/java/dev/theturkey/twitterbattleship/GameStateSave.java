@@ -39,11 +39,11 @@ public class GameStateSave
 			fis.close();
 			String fileInput = new String(data, StandardCharsets.UTF_8);
 			String[] lines = fileInput.replaceAll("\r", "").split("\n");
-			if(lines.length == 5)
+			if(lines.length == 7)
 			{
 				GameStateWrapper wrapper = new GameStateWrapper();
-				wrapper.playerBoard = loadGameBoard(lines[0], lines[2]);
-				wrapper.cpuBoard = loadGameBoard(lines[1], lines[3]);
+				wrapper.playerBoard = loadGameBoard(lines[0], lines[2], lines[5]);
+				wrapper.cpuBoard = loadGameBoard(lines[1], lines[3], lines[6]);
 				wrapper.lastTweetID = Long.parseLong(lines[4]);
 				return wrapper;
 			}
@@ -54,7 +54,7 @@ public class GameStateSave
 		return null;
 	}
 
-	public GameBoard loadGameBoard(String boats, String guesses)
+	public GameBoard loadGameBoard(String boats, String guesses, String score)
 	{
 		List<BoatInfo> boatsList = new ArrayList<>();
 		String[] lineBoats = boats.split(";");
@@ -80,7 +80,7 @@ public class GameStateSave
 			guessesList.add(new int[]{x, y});
 		}
 
-		return new GameBoard(boatsList, guessesList);
+		return new GameBoard(boatsList, guessesList, Integer.parseInt(score));
 	}
 
 	private BoatInfo getBoatInfoForID(int id, int x, int y, Direction direction)
@@ -128,7 +128,9 @@ public class GameStateSave
 			saveBuffer.deleteCharAt(saveBuffer.length() - 1).append("\n");
 			saveGuessesToBuffer(saveBuffer, cpuBoard.getGuessedPos());
 			saveBuffer.deleteCharAt(saveBuffer.length() - 1).append("\n");
-			saveBuffer.append(lastTweetID);
+			saveBuffer.append(lastTweetID).append("\n");
+			saveBuffer.append(playerBoard.getScore()).append("\n");
+			saveBuffer.append(cpuBoard.getScore()).append("\n");
 		}
 		try
 		{
