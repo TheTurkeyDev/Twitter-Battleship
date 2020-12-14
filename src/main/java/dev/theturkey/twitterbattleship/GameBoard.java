@@ -44,9 +44,9 @@ public class GameBoard
 	private List<int[]> guessedPos = new ArrayList<>();
 	private int score;
 
-	public GameBoard()
+	public GameBoard(int score)
 	{
-
+		this.score = score;
 	}
 
 	public GameBoard(List<BoatInfo> boats, List<int[]> guessedPos, int score)

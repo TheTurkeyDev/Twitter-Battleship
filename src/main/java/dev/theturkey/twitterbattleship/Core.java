@@ -50,8 +50,10 @@ public class Core
 
 	public void initGame()
 	{
-		playerBoard = new GameBoard();
-		cpuBoard = new GameBoard();
+		int playerWins = playerBoard.getScore();
+		playerBoard = new GameBoard(playerWins);
+		int cpuWins = cpuBoard.getScore();
+		cpuBoard = new GameBoard(cpuWins);
 		computerAI = new SimpleAI();
 		playerBoard.setup();
 		cpuBoard.setup();
