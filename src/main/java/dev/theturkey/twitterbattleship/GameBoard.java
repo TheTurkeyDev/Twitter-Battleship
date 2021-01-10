@@ -180,15 +180,15 @@ public class GameBoard
 		int parentXOff = (playerBoard ? 0 : 600);
 
 		g.setColor(BLACK);
-		g.setFont(Core.FONT_64);
+		g.setFont(Core.FONT_LARGE);
 
 		if(playerBoard)
 		{
-			g.drawString("PLAYER - " + score, 150, 60);
+			g.drawString("PLAYER - " + score, 125, 60);
 		}
 		else
 		{
-			g.drawString(score + " - COMPUTER", 625, 60);
+			g.drawString(score + " - COMPUTER", 600, 60);
 		}
 
 		for(int y = 0; y < BOARD_SIZE; y++)
@@ -208,11 +208,11 @@ public class GameBoard
 		}
 
 		g.setColor(Color.BLACK);
-		g.setFont(Core.FONT_24);
+		g.setFont(Core.FONT_SMALL);
 
 		for(int y = 0; y < BOARD_SIZE; y++)
 		{
-			g.drawString(String.valueOf(y + 1), parentXOff + 20, 110 + (y * 50));
+			g.drawString(String.valueOf(y + 1), parentXOff + (y == 9 ? 10 : 20), 110 + (y * 50));
 		}
 
 		for(int x = 0; x < BOARD_SIZE; x++)

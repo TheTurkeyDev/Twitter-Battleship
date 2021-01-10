@@ -27,9 +27,9 @@ public class Core
 {
 	public static final Random rand = new Random();
 
-	public static final Font FONT_64 = new Font("DejaVu Serif", Font.BOLD, 64);
-	public static final Font FONT_56 = new Font("DejaVu Serif", Font.BOLD, 56);
-	public static final Font FONT_24 = new Font("DejaVu Serif", Font.BOLD, 24);
+	public static final Font FONT_LARGE = new Font("DejaVu Serif", Font.BOLD, 64);
+	public static final Font FONT_MEDIUM = new Font("DejaVu Serif", Font.BOLD, 52);
+	public static final Font FONT_SMALL = new Font("DejaVu Serif", Font.BOLD, 24);
 
 	private GameBoard playerBoard;
 	private GameBoard cpuBoard;
@@ -201,7 +201,7 @@ public class Core
 		cpuBoard.getImage(g, false, gameOver);
 
 		g.setColor(GameBoard.BLACK);
-		g.setFont(FONT_56);
+		g.setFont(FONT_MEDIUM);
 
 		if(gameOver)
 			g.drawString("GAME OVER! " + (cpuWon ? " The Computer has won!" : " Twitter has won!"), 25, 650);
